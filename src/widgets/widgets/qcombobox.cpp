@@ -3505,6 +3505,46 @@ void QComboBox::setModelColumn(int visibleColumn)
     setCurrentIndex(currentIndex()); //update the text to the text of the new column;
 }
 
+//-------------------------------------------------------------------------------------------------
+//!!! Akvis hack
+void QComboBox::akvis_setEditable( bool editable, bool autoComplete ) {
+    if (isEditable() == editable)
+        return;
+    
+    //a) update state
+    Q_D(QComboBox);
+    if( editable ) {
+        QLineEdit *le = new QLineEdit( this );
+        this->setLineEdit( le );
+        QObject::disconnect( le, SIGNAL(editingFinished()), this, SLOT(_q_editingFinished()) );
+    }
+    else {
+        this->setAttribute( Qt::WA_InputMethodEnabled, false );
+        d->lineEdit->hide();
+        d->lineEdit->deleteLater();
+        d->lineEdit = NULL;
+    }
+    
+    //b) update style
+    if( d->container )
+    {
+        QStyleOptionComboBox opt;
+        initStyleOption( &opt );
+        bool usePopup = style()->styleHint( QStyle::SH_ComboBox_Popup, &opt, this );
+        
+        view()->setVerticalScrollBarPolicy( usePopup ? Qt::ScrollBarAlwaysOff : Qt::ScrollBarAsNeeded );
+        view()->akvis_doDelayedItemsLayout();  //item's height
+        
+        d->viewContainer()->updateTopBottomMargin(); //margins
+        d->viewContainer()->updateScrollers();       //hide/show top & bottom buttons
+        d->updateDelegate();                         //delegate
+    }
+    
+    if( !testAttribute( Qt::WA_Resized ) )
+        adjustSize();
+    update(); //different style may be to have different visualisation
+}
+
 QT_END_NAMESPACE
 
 #include "moc_qcombobox.cpp"

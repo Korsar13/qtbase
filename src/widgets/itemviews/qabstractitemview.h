@@ -376,6 +376,19 @@ private:
     friend class QListModeViewBase;
     friend class QListViewPrivate;
     friend class QAbstractSlider;
+    //-------------------------------------------------------------------------------------------------
+    //!!! Akvis hack
+public:
+    void akvis_doDelayedItemsLayout(int delay = 0);
+    bool akvis_shouldAutoScroll(const QPoint &pos) const;
+    QModelIndexList akvis_selectedDraggableIndexes() const;
+    bool akvis_isIndexDropEnabled( const QModelIndex &index ) const;
+    bool akvis_droppingOnItself(QDropEvent *event, const QModelIndex &index);
+    QPoint& akvis_pressedPosition();
+    QRect& akvis_dropIndicatorRect();
+    QAbstractItemView::DropIndicatorPosition& akvis_dropIndicatorPosition();
+    bool& akvis_noSelectionOnMousePress();
+    QPersistentModelIndex& akvis_hover();
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(QAbstractItemView::EditTriggers)

@@ -4487,6 +4487,67 @@ QModelIndexList QAbstractItemViewPrivate::selectedDraggableIndexes() const
     return indexes;
 }
 
+//-------------------------------------------------------------------------------------------------
+// Akvis Hack
+void QAbstractItemView::akvis_doDelayedItemsLayout(int delay)
+{
+    Q_D(QAbstractItemView);
+    d->doDelayedItemsLayout(delay);
+}
+
+bool QAbstractItemView::akvis_shouldAutoScroll(const QPoint &pos) const
+{
+    Q_D(const QAbstractItemView);
+    return d->shouldAutoScroll( pos );
+}
+
+QModelIndexList QAbstractItemView::akvis_selectedDraggableIndexes() const
+{
+    Q_D(const QAbstractItemView);
+    return d->selectedDraggableIndexes();
+}
+
+bool QAbstractItemView::akvis_droppingOnItself(QDropEvent *event, const QModelIndex &index)
+{
+    Q_D(QAbstractItemView);
+    return d->droppingOnItself(event, index);
+}
+
+bool QAbstractItemView::akvis_isIndexDropEnabled( const QModelIndex &index ) const
+{
+    Q_D(const QAbstractItemView);
+    return d->isIndexDropEnabled( index );
+}
+
+QPoint& QAbstractItemView::akvis_pressedPosition()
+{
+    Q_D(QAbstractItemView);
+    return d->pressedPosition;
+}
+
+QRect& QAbstractItemView::akvis_dropIndicatorRect()
+{
+    Q_D(QAbstractItemView);
+    return d->dropIndicatorRect;
+}
+
+QAbstractItemView::DropIndicatorPosition& QAbstractItemView::akvis_dropIndicatorPosition()
+{
+    Q_D(QAbstractItemView);
+    return d->dropIndicatorPosition;
+}
+
+bool& QAbstractItemView::akvis_noSelectionOnMousePress()
+{
+    Q_D(QAbstractItemView);
+    return d->noSelectionOnMousePress;
+}
+
+QPersistentModelIndex& QAbstractItemView::akvis_hover()
+{
+    Q_D(QAbstractItemView);
+    return d->hover;
+}
 
 QT_END_NAMESPACE
 

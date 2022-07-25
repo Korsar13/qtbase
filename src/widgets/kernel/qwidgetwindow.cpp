@@ -59,6 +59,11 @@ Q_WIDGETS_EXPORT extern bool qt_tab_all_widgets();
 
 QWidget *qt_button_down = 0; // widget got last button-down
 
+//!!! Akvis hack
+Q_WIDGETS_EXPORT QWidget** akvis_qt_button_down() {
+    return &qt_button_down;
+}
+
 // popup control
 QWidget *qt_popup_down = 0; // popup that contains the pressed widget
 extern int openPopupCount;

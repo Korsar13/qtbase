@@ -363,3 +363,7 @@ macx {
         SOURCES += widgets/qmenu_mac.mm
     }
 }
+
+HEADERS += ../../../AkvisTextControl.h
+SOURCES += ../../../AkvisTextControl.cpp
+

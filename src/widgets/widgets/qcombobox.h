@@ -266,6 +266,10 @@ private:
 #if QT_CONFIG(completer)
     Q_PRIVATE_SLOT(d_func(), void _q_completerActivated(const QModelIndex &index))
 #endif
+    //-------------------------------------------------------------------------------------------------
+    //!!! Akvis hack
+public:
+    void akvis_setEditable( bool editable, bool autoComplete );
 };
 
 inline void QComboBox::addItem(const QString &atext, const QVariant &auserData)
