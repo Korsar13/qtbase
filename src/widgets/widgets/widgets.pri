@@ -364,6 +364,6 @@ macx {
     }
 }
 
-HEADERS += ../../../AkvisTextControl.h
-SOURCES += ../../../AkvisTextControl.cpp
+HEADERS += AkvisTextControl.h
+SOURCES += AkvisTextControl.cpp
 

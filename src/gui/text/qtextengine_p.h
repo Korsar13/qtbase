@@ -290,7 +290,7 @@ private:
 
 struct QScriptItem;
 /// Internal QTextItem
-class QTextItemInt : public QTextItem
+class Q_GUI_EXPORT QTextItemInt : public QTextItem
 {
 public:
     inline QTextItemInt()
@@ -674,7 +674,7 @@ public:
 };
 Q_DECLARE_TYPEINFO(QTextEngine::ItemDecoration, Q_MOVABLE_TYPE);
 
-struct QTextLineItemIterator
+struct Q_GUI_EXPORT QTextLineItemIterator
 {
     QTextLineItemIterator(QTextEngine *eng, int lineNum, const QPointF &pos = QPointF(),
                           const QTextLayout::FormatRange *_selection = 0);
