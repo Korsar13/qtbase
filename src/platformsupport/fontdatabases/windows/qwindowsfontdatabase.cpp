@@ -1238,7 +1238,7 @@ QWindowsFontDatabase::~QWindowsFontDatabase()
 
 QFontEngineMulti *QWindowsFontDatabase::fontEngineMulti(QFontEngine *fontEngine, QChar::Script script)
 {
-    return new QWindowsMultiFontEngine(fontEngine, script);
+    return QPlatformFontDatabase::fontEngineMulti(fontEngine, script); //return new QWindowsMultiFontEngine(fontEngine, script);
 }
 
 QFontEngine * QWindowsFontDatabase::fontEngine(const QFontDef &fontDef, void *handle)
