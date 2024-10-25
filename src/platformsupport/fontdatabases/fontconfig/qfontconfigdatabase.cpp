@@ -372,6 +372,7 @@ static inline bool requiresOpenType(int writingSystem)
 static void populateFromPattern(FcPattern *pattern)
 {
     QString familyName;
+    QString familyPSName;
     QString familyNameLang;
     FcChar8 *value = 0;
     int weight_value;
@@ -389,6 +390,9 @@ static void populateFromPattern(FcPattern *pattern)
         return;
 
     familyName = QString::fromUtf8((const char *)value);
+
+    if( FcPatternGetString( pattern, FC_POSTSCRIPT_NAME, 0, &value ) == FcResultMatch )
+      familyPSName = QString::fromUtf8( (const char*)value );
 
     if (FcPatternGetString(pattern, FC_FAMILYLANG, 0, &value) == FcResultMatch)
         familyNameLang = QString::fromUtf8((const char *)value);
@@ -479,7 +483,7 @@ static void populateFromPattern(FcPattern *pattern)
     // Note: stretch should really be an int but registerFont incorrectly uses an enum
     QFont::Stretch stretch = QFont::Stretch(stretchFromFcWidth(width_value));
     QString styleName = style_value ? QString::fromUtf8((const char *) style_value) : QString();
-    QPlatformFontDatabase::registerFont(familyName,styleName,QLatin1String((const char *)foundry_value),weight,style,stretch,antialias,scalable,pixel_size,fixedPitch,writingSystems,fontFile);
+    QPlatformFontDatabase::registerFont(familyName, familyPSName,styleName,QLatin1String((const char *)foundry_value),weight,style,stretch,antialias,scalable,pixel_size,fixedPitch,writingSystems,fontFile);
 //        qDebug() << familyName << (const char *)foundry_value << weight << style << &writingSystems << scalable << true << pixel_size;
 
     for (int k = 1; FcPatternGetString(pattern, FC_FAMILY, k, &value) == FcResultMatch; ++k) {
@@ -501,7 +505,7 @@ static void populateFromPattern(FcPattern *pattern)
 
         if (familyNameLang == altFamilyNameLang && altStyleName != styleName) {
             FontFile *altFontFile = new FontFile(*fontFile);
-            QPlatformFontDatabase::registerFont(altFamilyName, altStyleName, QLatin1String((const char *)foundry_value),weight,style,stretch,antialias,scalable,pixel_size,fixedPitch,writingSystems,altFontFile);
+            QPlatformFontDatabase::registerFont(altFamilyName, familyPSName, altStyleName, QLatin1String((const char *)foundry_value),weight,style,stretch,antialias,scalable,pixel_size,fixedPitch,writingSystems,altFontFile);
         } else {
             QPlatformFontDatabase::registerAliasToFontFamily(familyName, altFamilyName);
         }
@@ -518,7 +522,7 @@ void QFontconfigDatabase::populateFontDatabase()
         FcObjectSet *os = FcObjectSetCreate();
         FcPattern *pattern = FcPatternCreate();
         const char *properties [] = {
-            FC_FAMILY, FC_STYLE, FC_WEIGHT, FC_SLANT,
+            FC_FAMILY, FC_POSTSCRIPT_NAME, FC_STYLE, FC_WEIGHT, FC_SLANT,
             FC_SPACING, FC_FILE, FC_INDEX,
             FC_LANG, FC_CHARSET, FC_FOUNDRY, FC_SCALABLE, FC_PIXEL_SIZE,
             FC_WIDTH, FC_FAMILYLANG,

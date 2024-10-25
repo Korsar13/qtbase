@@ -121,6 +121,7 @@ public:
     QList<WritingSystem> writingSystems(const QString &family) const;
 
     QStringList families(WritingSystem writingSystem = Any) const;
+    QString postScriptName( const QString& family, const QString& style = QString() ) const;
     QStringList styles(const QString &family) const;
     QList<int> pointSizes(const QString &family, const QString &style = QString());
     QList<int> smoothSizes(const QString &family, const QString &style);

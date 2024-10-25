@@ -98,8 +98,8 @@
 #include <openssl/crypto.h>
 #include <openssl/tls1.h>
 
-#if OPENSSL_VERSION_NUMBER >= 0x10000000L
-typedef _STACK STACK;
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+#include <openssl/dh.h>
 #endif
 
 QT_BEGIN_NAMESPACE
@@ -151,7 +151,7 @@ public:
 #endif
 
     Q_AUTOTEST_EXPORT static long setupOpenSslOptions(QSsl::SslProtocol protocol, QSsl::SslOptions sslOptions);
-    static QSslCipher QSslCipher_from_SSL_CIPHER(SSL_CIPHER *cipher);
+    static QSslCipher QSslCipher_from_SSL_CIPHER(const SSL_CIPHER *cipher);
     static QList<QSslCertificate> STACKOFX509_to_QSslCertificates(STACK_OF(X509) *x509);
     static QList<QSslError> verify(const QList<QSslCertificate> &certificateChain, const QString &hostName);
     static QString getErrorsFromOpenSsl();

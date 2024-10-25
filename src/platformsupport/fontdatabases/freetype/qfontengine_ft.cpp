@@ -1763,6 +1763,8 @@ bool QFontEngineFT::stringToCMap(const QChar *str, int len, QGlyphLayout *glyphs
 
 bool QFontEngineFT::shouldUseDesignMetrics(QFontEngine::ShaperFlags flags) const
 {
+    if ( !freetype || !freetype->face )
+        return false;
     if (!FT_IS_SCALABLE(freetype->face))
         return false;
 

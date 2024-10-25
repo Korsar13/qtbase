@@ -37,6 +37,8 @@
 **
 ****************************************************************************/
 
+#include <limits>
+
 #ifndef QBYTEARRAYMATCHER_H
 #define QBYTEARRAYMATCHER_H
 

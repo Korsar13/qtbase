@@ -52,7 +52,7 @@
 
 QT_BEGIN_NAMESPACE
 
-void qt_registerFont(const QString &familyname, const QString &stylename,
+void qt_registerFont(const QString &familyname, const QString& familyPSName, const QString &stylename,
                      const QString &foundryname, int weight,
                      QFont::Style style, int stretch, bool antialiased,
                      bool scalable, int pixelSize, bool fixedPitch,
@@ -135,9 +135,23 @@ void QPlatformFontDatabase::registerFont(const QString &familyname, const QStrin
     if (scalable)
         pixelSize = 0;
 
-    qt_registerFont(familyname, stylename, foundryname, weight, style,
+    qt_registerFont(familyname, QString(), stylename, foundryname, weight, style,
                     stretch, antialiased, scalable, pixelSize,
                     fixedPitch, writingSystems, usrPtr);
+}
+
+void QPlatformFontDatabase::registerFont( const QString& familyname, const QString& familyPSname, const QString& stylename,
+  const QString& foundryname, QFont::Weight weight,
+  QFont::Style style, QFont::Stretch stretch, bool antialiased,
+  bool scalable, int pixelSize, bool fixedPitch,
+  const QSupportedWritingSystems& writingSystems, void* usrPtr )
+{
+  if( scalable )
+    pixelSize = 0;
+
+  qt_registerFont( familyname, familyPSname, stylename, foundryname, weight, style,
+    stretch, antialiased, scalable, pixelSize,
+    fixedPitch, writingSystems, usrPtr );
 }
 
 /*!

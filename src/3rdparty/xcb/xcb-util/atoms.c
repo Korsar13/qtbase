@@ -2,8 +2,8 @@
    possible... */
 #ifdef HAVE_VASPRINTF
 #define _GNU_SOURCE
-#include <stdio.h>
 #endif
+#include <stdio.h>
 
 #include <xcb/xcb.h>
 #include <stdlib.h>
