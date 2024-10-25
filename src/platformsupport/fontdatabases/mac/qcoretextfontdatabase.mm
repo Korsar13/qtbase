@@ -262,6 +262,7 @@ void QCoreTextFontDatabase::invalidate()
 
 struct FontDescription {
     QCFString familyName;
+    QCFString postscriptName;
     QCFString styleName;
     QString foundryName;
     QFont::Weight weight;
@@ -278,6 +279,7 @@ Q_DECL_UNUSED static inline QDebug operator<<(QDebug debug, const FontDescriptio
     QDebugStateSaver saver(debug);
     return debug.nospace() << "FontDescription("
         << "familyName=" << QString(fd.familyName)
+        << ", postscriptName=" << QString(fd.postscriptName)
         << ", styleName=" << QString(fd.styleName)
         << ", foundry=" << fd.foundryName
         << ", weight=" << fd.weight
@@ -296,6 +298,7 @@ static void getFontDescription(CTFontDescriptorRef font, FontDescription *fd)
 
     fd->foundryName = QStringLiteral("CoreText");
     fd->familyName = (CFStringRef) CTFontDescriptorCopyAttribute(font, kCTFontFamilyNameAttribute);
+    fd->postscriptName = (CFStringRef) CTFontDescriptorCopyAttribute(font, kCTFontNameAttribute);
     fd->styleName = (CFStringRef)CTFontDescriptorCopyAttribute(font, kCTFontStyleNameAttribute);
     fd->weight = QFont::Normal;
     fd->style = QFont::StyleNormal;
@@ -388,7 +391,7 @@ void QCoreTextFontDatabase::populateFromDescriptor(CTFontDescriptorRef font, con
     QString family = !familyName.isNull() ? familyName : static_cast<QString>(fd.familyName);
 
     CFRetain(font);
-    QPlatformFontDatabase::registerFont(family, fd.styleName, fd.foundryName, fd.weight, fd.style, fd.stretch,
+    QPlatformFontDatabase::registerFont(family, fd.postscriptName, fd.styleName, fd.foundryName, fd.weight, fd.style, fd.stretch,
             true /* antialiased */, true /* scalable */,
             fd.pixelSize, fd.fixedPitch, fd.writingSystems, (void *) font);
 }
