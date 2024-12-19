@@ -311,20 +311,20 @@ struct QtFontFoundry
     QtFontStyle *style(const QtFontStyle::Key &, const QString & = QString(), bool = false);
 };
 
-QtFontStyle *QtFontFoundry::style(const QtFontStyle::Key &key, const QString &styleName, bool create)
+QtFontStyle* QtFontFoundry::style( const QtFontStyle::Key& key, const QString& styleName, bool create )
 {
     int pos = 0;
-    for (; pos < count; pos++) {
-        bool hasStyleName = !styleName.isEmpty(); // search styleName first if available
-        if (hasStyleName && !styles[pos]->styleName.isEmpty()) {
-            if (styles[pos]->styleName == styleName)
-                return styles[pos];
-        } else {
-            if (styles[pos]->key == key)
-                return styles[pos];
-        }
+    bool hasStyleName = !styleName.isEmpty();
+    for( ; pos < count; pos++ ){
+      QtFontStyle* style = styles[pos];
+      if( style->key == key )  // search key first
+        return style;
+      else if( hasStyleName && !style->styleName.isEmpty() ){
+        if( style->styleName == styleName )
+          return style;
+      }
     }
-    if (!create)
+    if( !create )
         return 0;
 
 //     qDebug("adding key (weight=%d, style=%d, oblique=%d stretch=%d) at %d", key.weight, key.style, key.oblique, key.stretch, pos);
@@ -1616,7 +1616,7 @@ QString QFontDatabase::postScriptName( const QString& family, const QString& sty
     }
   }
   QtFontStyle::Key styleKey( style );
-  QtFontStyle* s = allStyles.style( styleKey );
+  QtFontStyle* s = allStyles.style( styleKey, style );
 
   if( s )
     return f->psName;
@@ -1988,7 +1988,7 @@ bool QFontDatabase::italic( const QString& family, const QString& style ) const
     }
 
     QtFontStyle::Key styleKey( style );
-    QtFontStyle *s = allStyles.style( styleKey );
+    QtFontStyle *s = allStyles.style( styleKey, style );
     return s && s->key.style == QFont::StyleItalic;
 }
 
@@ -2022,7 +2022,7 @@ bool QFontDatabase::bold( const QString& family, const QString& style ) const
     }
 
     QtFontStyle::Key styleKey( style );
-    QtFontStyle *s = allStyles.style( styleKey );
+    QtFontStyle *s = allStyles.style( styleKey, style );
     return s && s->key.weight >= QFont::Bold;
 }
 
@@ -2057,7 +2057,7 @@ int QFontDatabase::weight( const QString& family, const QString& style ) const
     }
 
     QtFontStyle::Key styleKey( style );
-    QtFontStyle *s = allStyles.style( styleKey );
+    QtFontStyle *s = allStyles.style( styleKey, style );
     return s ? s->key.weight : -1;
 }
 

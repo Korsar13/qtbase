@@ -1763,12 +1763,10 @@ bool QFontEngineFT::stringToCMap(const QChar *str, int len, QGlyphLayout *glyphs
 
 bool QFontEngineFT::shouldUseDesignMetrics(QFontEngine::ShaperFlags flags) const
 {
-    if ( !freetype || !freetype->face )
-        return false;
-    if (!FT_IS_SCALABLE(freetype->face))
-        return false;
+  if (!FT_IS_SCALABLE(freetype->face))
+    return false;
 
-    return default_hint_style == HintNone || default_hint_style == HintLight || (flags & DesignMetrics);
+  return default_hint_style == HintNone || default_hint_style == HintLight || (flags & DesignMetrics);
 }
 
 QFixed QFontEngineFT::scaledBitmapMetrics(QFixed m) const
@@ -1803,37 +1801,40 @@ glyph_metrics_t QFontEngineFT::scaledBitmapMetrics(const glyph_metrics_t &m, con
 
 void QFontEngineFT::recalcAdvances(QGlyphLayout *glyphs, QFontEngine::ShaperFlags flags) const
 {
-    FT_Face face = 0;
-    bool design = shouldUseDesignMetrics(flags);
-    for (int i = 0; i < glyphs->numGlyphs; i++) {
-        Glyph *g = cacheEnabled ? defaultGlyphSet.getGlyph(glyphs->glyphs[i]) : 0;
-        // Since we are passing Format_None to loadGlyph, use same default format logic as loadGlyph
-        GlyphFormat acceptableFormat = (defaultFormat != Format_None) ? defaultFormat : Format_Mono;
-        if (g && g->format == acceptableFormat) {
-            glyphs->advances[i] = design ? QFixed::fromFixed(g->linearAdvance) : QFixed(g->advance);
-        } else {
-            if (!face)
-                face = lockFace();
-            g = loadGlyph(cacheEnabled ? &defaultGlyphSet : 0, glyphs->glyphs[i], 0, Format_None, true);
-            if (g)
-                glyphs->advances[i] = design ? QFixed::fromFixed(g->linearAdvance) : QFixed(g->advance);
-            else
-                glyphs->advances[i] = design ? QFixed::fromFixed(face->glyph->linearHoriAdvance >> 10)
-                                             : QFixed::fromFixed(face->glyph->metrics.horiAdvance).round();
-            if (!cacheEnabled && g != &emptyGlyph)
-                delete g;
-        }
+  if( !freetype->face )
+    return;
 
-        if (scalableBitmapScaleFactor != 1)
-            glyphs->advances[i] *= scalableBitmapScaleFactor;
+  FT_Face face = 0;
+  bool design = shouldUseDesignMetrics(flags);
+  for (int i = 0; i < glyphs->numGlyphs; i++) {
+    Glyph *g = cacheEnabled ? defaultGlyphSet.getGlyph(glyphs->glyphs[i]) : 0;
+    // Since we are passing Format_None to loadGlyph, use same default format logic as loadGlyph
+    GlyphFormat acceptableFormat = (defaultFormat != Format_None) ? defaultFormat : Format_Mono;
+    if (g && g->format == acceptableFormat) {
+      glyphs->advances[i] = design ? QFixed::fromFixed(g->linearAdvance) : QFixed(g->advance);
+    } else {
+      if (!face)
+        face = lockFace();
+      g = loadGlyph(cacheEnabled ? &defaultGlyphSet : 0, glyphs->glyphs[i], 0, Format_None, true);
+      if (g)
+        glyphs->advances[i] = design ? QFixed::fromFixed(g->linearAdvance) : QFixed(g->advance);
+      else
+        glyphs->advances[i] = design ? QFixed::fromFixed(face->glyph->linearHoriAdvance >> 10)
+                                      : QFixed::fromFixed(face->glyph->metrics.horiAdvance).round();
+      if (!cacheEnabled && g != &emptyGlyph)
+        delete g;
     }
-    if (face)
-        unlockFace();
 
-    if (fontDef.styleStrategy & QFont::ForceIntegerMetrics) {
-        for (int i = 0; i < glyphs->numGlyphs; ++i)
-            glyphs->advances[i] = glyphs->advances[i].round();
-    }
+    if (scalableBitmapScaleFactor != 1)
+      glyphs->advances[i] *= scalableBitmapScaleFactor;
+  }
+  if (face)
+    unlockFace();
+
+  if (fontDef.styleStrategy & QFont::ForceIntegerMetrics) {
+    for (int i = 0; i < glyphs->numGlyphs; ++i)
+      glyphs->advances[i] = glyphs->advances[i].round();
+  }
 }
 
 glyph_metrics_t QFontEngineFT::boundingBox(const QGlyphLayout &glyphs)
