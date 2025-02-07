@@ -75,6 +75,8 @@
 
 #include <stdlib.h>
 
+#include <functional>
+
 QT_BEGIN_NAMESPACE
 
 class QFontPrivate;
@@ -82,6 +84,9 @@ class QFontEngine;
 
 class QString;
 class QPainter;
+class QPainterPath;
+
+using warptext_callback_t = std::function<void(QPainter*, QPainterPath&)>;
 
 class QAbstractTextDocumentLayout;
 
@@ -290,7 +295,7 @@ private:
 
 struct QScriptItem;
 /// Internal QTextItem
-class Q_GUI_EXPORT QTextItemInt : public QTextItem
+class QTextItemInt : public QTextItem
 {
 public:
     inline QTextItemInt()
@@ -663,6 +668,13 @@ private:
     int endOfLine(int lineNum);
     int beginningOfLine(int lineNum);
     int getClusterLength(unsigned short *logClusters, const QCharAttributes *attributes, int from, int to, int glyph_pos, int *start);
+
+public:
+    warptext_callback_t& warper() const noexcept { return warptext_fn; }
+    void setWarper(warptext_callback_t fn) const { Q_ASSERT( !fn || !warptext_fn ); warptext_fn = fn; }
+private:
+    // warptext_callback_t = std::function<void(QPainter*, QPainterPath&)>
+    mutable warptext_callback_t warptext_fn = nullptr;
 };
 
 class Q_GUI_EXPORT QStackTextEngine : public QTextEngine {
@@ -674,7 +686,7 @@ public:
 };
 Q_DECLARE_TYPEINFO(QTextEngine::ItemDecoration, Q_MOVABLE_TYPE);
 
-struct Q_GUI_EXPORT QTextLineItemIterator
+struct QTextLineItemIterator
 {
     QTextLineItemIterator(QTextEngine *eng, int lineNum, const QPointF &pos = QPointF(),
                           const QTextLayout::FormatRange *_selection = 0);

@@ -38,6 +38,7 @@
 ****************************************************************************/
 
 #include "qtextdocumentlayout_p.h"
+#include "qtextdocument.h"
 #include "qtextdocument_p.h"
 #include "qtextimagehandler_p.h"
 #include "qtexttable.h"
@@ -2232,6 +2233,8 @@ QRectF QTextDocumentLayoutPrivate::layoutFrame(QTextFrame *f, int layoutFrom, in
                  : fd->contentsHeight + 2*(fd->border + fd->padding) + fd->topMargin + fd->bottomMargin;
     fd->size.width = actualWidth + marginWidth;
     fd->sizeDirty = false;
+    if ( document->warper() )
+        document->calc_containing_rect( fd->size );
     if (layoutStruct.updateRectForFloats.isValid())
         layoutStruct.updateRect |= layoutStruct.updateRectForFloats;
     return layoutStruct.updateRect;

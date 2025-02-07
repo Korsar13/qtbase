@@ -932,7 +932,44 @@ QRectF QTextLayout::boundingRect() const
         // ### shouldn't the ascent be used in ymin???
         ymax = qMax(ymax, si.y+si.height().ceil());
     }
-    return QRectF(xmin.toReal(), ymin.toReal(), (xmax-xmin).toReal(), (ymax-ymin).toReal());
+    QRectF br(xmin.toReal(), ymin.toReal(), (xmax - xmin).toReal(), (ymax - ymin).toReal());
+    if (auto warp = d->warper())
+    {
+        QPainter p;
+        QPainterPath path(br.topLeft());
+        path.lineTo(br.topRight());
+        path.lineTo(br.bottomRight());
+        path.lineTo(br.bottomLeft());
+        path.lineTo(br.topLeft());
+        warp(&p, path);
+        qreal minX = path.elementAt(0).x;
+        qreal minY = path.elementAt(0).y;
+        qreal maxX = minX;
+        qreal maxY = minY;
+        for (int i = 1; i < path.elementCount(); ++i)
+        {
+            const auto& elem = path.elementAt(i);
+
+            if (elem.x < minX)
+                minX = elem.x;
+            else if (elem.x > maxX)
+                maxX = elem.x;
+
+            if (elem.y < minY)
+                minY = elem.y;
+            else if (elem.y > maxY)
+                maxY = elem.y;
+        }
+#if 0
+        br.setTopLeft(QPointF(0,0));
+        br.setBottomRight(QPointF(maxX-minX, maxY-minY));
+#else
+        br.setTopLeft(QPointF(minX, minY));
+        br.setBottomRight(QPointF(maxX, maxY));
+#endif
+    }
+    return br;    
+    //return QRectF(xmin.toReal(), ymin.toReal(), (xmax-xmin).toReal(), (ymax-ymin).toReal());
 }
 
 /*!
@@ -1182,6 +1219,10 @@ void QTextLayout::draw(QPainter *p, const QPointF &pos, const QVector<FormatRang
 
             p->setPen(selection.format.penProperty(QTextFormat::OutlinePen));
             p->setBrush(selection.format.brushProperty(QTextFormat::BackgroundBrush));
+
+            if ( d->warper() )
+                d->warper()( p, region );
+
             p->drawPath(region);
 
             p->setPen(oldPen);
@@ -2573,7 +2614,7 @@ void QTextLine::draw(QPainter *p, const QPointF &pos, const QTextLayout::FormatR
         Q_ASSERT(gf.fontEngine);
 
         QPointF pos(iterator.x.toReal(), itemBaseLine.toReal());
-        if (format.penProperty(QTextFormat::TextOutline).style() != Qt::NoPen) {
+        if (format.penProperty(QTextFormat::TextOutline).style() != Qt::NoPen || eng->warper() ) {
             QPainterPath path;
             path.setFillRule(Qt::WindingFill);
 
@@ -2595,6 +2636,9 @@ void QTextLine::draw(QPainter *p, const QPointF &pos, const QTextLayout::FormatR
                     path.addRect(pos.x(), pos.y() - offs, gf.width.toReal(), lw);
                 }
             }
+
+            if (eng->warper())
+                eng->warper()(p, path);
 
             p->save();
             p->setRenderHint(QPainter::Antialiasing);

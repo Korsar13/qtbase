@@ -67,6 +67,7 @@ class QVariant;
 class QRectF;
 class QTextOption;
 class QTextCursor;
+struct QFixed;
 
 template<typename T> class QVector;
 
@@ -93,6 +94,10 @@ inline QAbstractUndoItem::~QAbstractUndoItem()
 }
 
 class QTextDocumentPrivate;
+struct QFixedSize;
+struct QFixedPoint;
+
+using warptext_callback_t = std::function<void(QPainter*, QPainterPath&)>;
 
 class Q_GUI_EXPORT QTextDocument : public QObject
 {
@@ -270,6 +275,10 @@ public:
     Qt::CursorMoveStyle defaultCursorMoveStyle() const;
     void setDefaultCursorMoveStyle(Qt::CursorMoveStyle style);
 
+    warptext_callback_t& warper() const noexcept;
+
+    void calc_containing_rect(QFixedSize& sz) const;
+    
 Q_SIGNALS:
     void contentsChange(int from, int charsRemoved, int charsAdded);
     void contentsChanged();

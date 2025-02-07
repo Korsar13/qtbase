@@ -61,11 +61,13 @@
 #include <qdir.h>
 #include "qfont_p.h"
 #include "private/qdataurl_p.h"
+#include "private/qfixed_p.h"
 
 #include "qtextdocument_p.h"
 #include <private/qabstracttextdocumentlayout_p.h>
 #include "qpagedpaintdevice.h"
 #include "private/qpagedpaintdevice_p.h"
+#include "private/qtextengine_p.h"
 
 #include <limits.h>
 
@@ -2223,6 +2225,59 @@ QVariant QTextDocument::loadResource(int type, const QUrl &name)
         d->cachedResources.insert(name, r);
     }
     return r;
+}
+
+static warptext_callback_t noop = nullptr;
+
+warptext_callback_t& QTextDocument::warper() const noexcept
+{
+    QTextBlock it = begin();
+    return it.isValid() && it.layout() && it.layout()->engine() ? it.layout()->engine()->warper() : noop;
+}
+
+void QTextDocument::calc_containing_rect(QFixedSize& size) const
+{
+    if (size.width.toReal() == 0 || size.height.toReal() == 0)
+        return;
+    auto warp = warper();
+    if ( !warp )
+        return;
+
+    QPainterPath path;
+    path.moveTo(QPointF(0, 0));
+    path.lineTo(QPointF(size.width.toReal(), 0));
+    path.lineTo(QPointF(size.width.toReal(), size.height.toReal()));
+    path.lineTo(QPointF(0, size.height.toReal()));
+    path.lineTo(QPointF(0, 0));
+    QPainter p;
+
+    warp(&p, path);
+
+    qreal minX = path.elementAt(0).x;
+    qreal minY = path.elementAt(0).y;
+    qreal maxX = minX;
+    qreal maxY = minY;
+    for (int i = 1; i < path.elementCount(); ++i)
+    {
+        if (path.elementAt(i).x < minX)
+        {
+            minX = path.elementAt(i).x;
+        }
+        else if (path.elementAt(i).x > maxX)
+        {
+            maxX = path.elementAt(i).x;
+        }
+        if (path.elementAt(i).y < minY)
+        {
+            minY = path.elementAt(i).y;
+        }
+        else if (path.elementAt(i).y > maxY)
+        {
+            maxY = path.elementAt(i).y;
+        }
+    }
+    size.width = QFixed::fromReal(maxX - minX);
+    size.height = QFixed::fromReal(maxY - minY);
 }
 
 static QTextFormat formatDifference(const QTextFormat &from, const QTextFormat &to)
