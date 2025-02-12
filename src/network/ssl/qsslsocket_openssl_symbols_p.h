@@ -72,8 +72,6 @@
 #include "qsslsocket_openssl_p.h"
 #include <QtCore/qglobal.h>
 
-#include <openssl/opensslv.h>
-
 QT_BEGIN_NAMESPACE
 
 #define DUMMYARG
@@ -218,7 +216,7 @@ QT_BEGIN_NAMESPACE
 
 #endif // !defined QT_LINKED_OPENSSL
 
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+#if QT_CONFIG(opensslv11)
 #include "qsslsocket_openssl11_symbols_p.h"
 #else
 #include "qsslsocket_opensslpre11_symbols_p.h"

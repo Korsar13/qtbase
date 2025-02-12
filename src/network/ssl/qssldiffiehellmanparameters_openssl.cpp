@@ -1,6 +1,7 @@
 /****************************************************************************
 **
 ** Copyright (C) 2015 Mikkel Krautz <mikkel@krautz.dk>
+** Copyright (C) 2016 Richard J. Moore <rich@kde.org>
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtNetwork module of the Qt Toolkit.
@@ -50,7 +51,6 @@
 #include <QtCore/qdebug.h>
 #endif
 
-// For q_BN_is_word.
 #include <openssl/bn.h>
 #include <openssl/dh.h>
 
@@ -75,25 +75,30 @@ static bool isSafeDH(DH *dh)
     //     Without the test, the IETF parameters would
     //     fail validation. For details, see Diffie-Hellman
     //     Parameter Check (when g = 2, must p mod 24 == 11?).
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+#if QT_CONFIG(opensslv11)
     // Mark p < 1024 bits as unsafe.
     if (q_DH_bits(dh) < 1024)
         return false;
+
     if (q_DH_check(dh, &status) != 1)
         return false;
+
     const BIGNUM *p = nullptr;
     const BIGNUM *q = nullptr;
     const BIGNUM *g = nullptr;
     q_DH_get0_pqg(dh, &p, &q, &g);
+
     if (q_BN_is_word(const_cast<BIGNUM *>(g), DH_GENERATOR_2)) {
         long residue = q_BN_mod_word(p, 24);
         if (residue == 11 || residue == 23)
             status &= ~DH_NOT_SUITABLE_GENERATOR;
     }
+
 #else
     // Mark p < 1024 bits as unsafe.
     if (q_BN_num_bits(dh->p) < 1024)
         return false;
+
     if (q_DH_check(dh, &status) != 1)
         return false;
 

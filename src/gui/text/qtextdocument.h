@@ -55,6 +55,7 @@ class QTextFormatCollection;
 class QTextListFormat;
 class QRect;
 class QPainter;
+class QPainterPath;
 class QPagedPaintDevice;
 class QAbstractTextDocumentLayout;
 class QPoint;

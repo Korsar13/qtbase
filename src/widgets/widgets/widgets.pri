@@ -364,6 +364,7 @@ macx {
     }
 }
 
-HEADERS += AkvisTextControl.h
-SOURCES += AkvisTextControl.cpp
-
+#!qtConfig(static) {
+#HEADERS += widgets/AkvisTextControl.h
+#SOURCES += widgets/AkvisTextControl.cpp
+#}

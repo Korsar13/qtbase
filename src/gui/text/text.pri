@@ -103,3 +103,8 @@ qtConfig(cssparser) {
     SOURCES += \
         text/qcssparser.cpp
 }
+
+!qtConfig(static) {
+	HEADERS += text/AkvisQtGui.h
+	SOURCES += text/AkvisQtGui.cpp
+}

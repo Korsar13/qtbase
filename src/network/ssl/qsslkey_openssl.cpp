@@ -1,6 +1,7 @@
 /****************************************************************************
 **
-** Copyright (C) 2016 The Qt Company Ltd.
+** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2016 Richard J. Moore <rich@kde.org>
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtNetwork module of the Qt Toolkit.
@@ -84,7 +85,10 @@ void QSslKeyPrivate::clear(bool deep)
 
 bool QSslKeyPrivate::fromEVP_PKEY(EVP_PKEY *pkey)
 {
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+    if (pkey == nullptr)
+        return false;
+
+#if QT_CONFIG(opensslv11)
     const int keyType = q_EVP_PKEY_type(q_EVP_PKEY_base_id(pkey));
 #else
     const int keyType = pkey->type;
@@ -93,10 +97,10 @@ bool QSslKeyPrivate::fromEVP_PKEY(EVP_PKEY *pkey)
         isNull = false;
         algorithm = QSsl::Rsa;
         type = QSsl::PrivateKey;
+
         rsa = q_EVP_PKEY_get1_RSA(pkey);
         return true;
-    }
-    else if (pkey->type == EVP_PKEY_DSA) {
+    } else if (keyType == EVP_PKEY_DSA) {
         isNull = false;
         algorithm = QSsl::Dsa;
         type = QSsl::PrivateKey;
@@ -105,7 +109,7 @@ bool QSslKeyPrivate::fromEVP_PKEY(EVP_PKEY *pkey)
         return true;
     }
 #ifndef OPENSSL_NO_EC
-    else if (pkey->type == EVP_PKEY_EC) {
+    else if (keyType == EVP_PKEY_EC) {
         isNull = false;
         algorithm = QSsl::Ec;
         type = QSsl::PrivateKey;
@@ -272,12 +276,13 @@ Qt::HANDLE QSslKeyPrivate::handle() const
 
 static QByteArray doCrypt(QSslKeyPrivate::Cipher cipher, const QByteArray &data, const QByteArray &key, const QByteArray &iv, int enc)
 {
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+#if QT_CONFIG(opensslv11)
     EVP_CIPHER_CTX *ctx = q_EVP_CIPHER_CTX_new();
 #else
     EVP_CIPHER_CTX evpCipherContext;
     EVP_CIPHER_CTX *ctx = &evpCipherContext;
 #endif
+
     const EVP_CIPHER* type = 0;
     int i = 0, len = 0;
 
@@ -295,16 +300,19 @@ static QByteArray doCrypt(QSslKeyPrivate::Cipher cipher, const QByteArray &data,
 
     QByteArray output;
     output.resize(data.size() + EVP_MAX_BLOCK_LENGTH);
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+
+#if QT_CONFIG(opensslv11)
     q_EVP_CIPHER_CTX_reset(ctx);
 #else
     q_EVP_CIPHER_CTX_init(ctx);
 #endif
+
     q_EVP_CipherInit(ctx, type, NULL, NULL, enc);
     q_EVP_CIPHER_CTX_set_key_length(ctx, key.size());
     if (cipher == QSslKeyPrivate::Rc2Cbc)
         q_EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_SET_RC2_KEY_BITS, 8 * key.size(), NULL);
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+
+#if QT_CONFIG(opensslv11)
     // EVP_CipherInit in 1.1 resets the context thus making the calls above useless.
     // We call EVP_CipherInit_ex instead.
     q_EVP_CipherInit_ex(ctx, nullptr, nullptr,
@@ -315,7 +323,7 @@ static QByteArray doCrypt(QSslKeyPrivate::Cipher cipher, const QByteArray &data,
     q_EVP_CipherInit(ctx, NULL,
         reinterpret_cast<const unsigned char *>(key.constData()),
         reinterpret_cast<const unsigned char *>(iv.constData()), enc);
-#endif
+#endif // opensslv11
 
     q_EVP_CipherUpdate(ctx,
         reinterpret_cast<unsigned char *>(output.data()), &len,
@@ -324,7 +332,7 @@ static QByteArray doCrypt(QSslKeyPrivate::Cipher cipher, const QByteArray &data,
         reinterpret_cast<unsigned char *>(output.data()) + len, &i);
     len += i;
 
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+#if QT_CONFIG(opensslv11)
     q_EVP_CIPHER_CTX_reset(ctx);
     q_EVP_CIPHER_CTX_free(ctx);
 #else

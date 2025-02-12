@@ -70,7 +70,7 @@ QT_BEGIN_NAMESPACE
 class QMimeData;
 class QAbstractScrollArea;
 
-class QWidgetTextControlPrivate : public QObjectPrivate
+class Q_WIDGETS_EXPORT QWidgetTextControlPrivate : public QObjectPrivate
 {
     Q_DECLARE_PUBLIC(QWidgetTextControl)
 public:

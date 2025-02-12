@@ -1,6 +1,7 @@
 /****************************************************************************
 **
-** Copyright (C) 2016 The Qt Company Ltd.
+** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2016 Richard J. Moore <rich@kde.org>
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QtNetwork module of the Qt Toolkit.
@@ -69,9 +70,9 @@ uint qHash(const QSslCertificate &key, uint seed) Q_DECL_NOTHROW
         unsigned char md[EVP_MAX_MD_SIZE];
         q_X509_digest(x509, sha1, md, &len);
         return qHashBits(md, len, seed);
-    } else {
-        return seed;
     }
+
+    return seed;
 }
 
 bool QSslCertificate::isNull() const
@@ -207,6 +208,7 @@ QMultiMap<QSsl::AlternativeNameEntryType, QString> QSslCertificate::subjectAlter
             else if (genName->type == GEN_EMAIL)
                 result.insert(QSsl::EmailEntry, altName);
         }
+
         q_OPENSSL_sk_pop_free((OPENSSL_STACK*)altNames, reinterpret_cast<void(*)(void*)>(q_OPENSSL_sk_free));
     }
 
@@ -237,7 +239,7 @@ QSslKey QSslCertificate::publicKey() const
 
     key.d->type = QSsl::PublicKey;
 
-	EVP_PKEY *pkey = q_X509_get_pubkey(d->x509);
+    EVP_PKEY *pkey = q_X509_get_pubkey(d->x509);
     Q_ASSERT(pkey);
     const int keyType = q_EVP_PKEY_type(q_EVP_PKEY_base_id(pkey));
 
@@ -605,7 +607,7 @@ static QMap<QByteArray, QString> _q_mapFromX509Name(X509_NAME *name)
         unsigned char *data = 0;
         int size = q_ASN1_STRING_to_UTF8(&data, q_X509_NAME_ENTRY_get_data(e));
         info.insertMulti(name, QString::fromUtf8((char*)data, size));
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+#if QT_CONFIG(opensslv11)
         q_CRYPTO_free(data, 0, 0);
 #else
         q_CRYPTO_free(data);
@@ -623,6 +625,7 @@ QSslCertificate QSslCertificatePrivate::QSslCertificate_from_X509(X509 *x509)
 
     ASN1_TIME *nbef = q_X509_getm_notBefore(x509);
     ASN1_TIME *naft = q_X509_getm_notAfter(x509);
+
     certificate.d->notValidBefore = q_getTimeFromASN1(nbef);
     certificate.d->notValidAfter = q_getTimeFromASN1(naft);
     certificate.d->null = false;
