@@ -40,7 +40,9 @@
 
 #include <private/qdrawhelper_x86_p.h>
 
-#ifdef QT_COMPILER_SUPPORTS_SSE2
+//#ifdef QT_COMPILER_SUPPORTS_SSE2
+//#if ( _M_IX86 || _M_X64 || _M_AMD64 || __x86_64 || __x86_64__ || __amd64 || __amd64__ )
+#ifdef __SSE2__
 
 #include <private/qdrawingprimitive_sse2_p.h>
 #include <private/qpaintengine_raster_p.h>

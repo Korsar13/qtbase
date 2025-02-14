@@ -94,3 +94,4 @@ qtConfig(angle) {
 qtConfig(egl): CMAKE_EGL_INCDIRS = $$cmakePortablePaths($$QMAKE_INCDIR_EGL)
 
 QMAKE_DYNAMIC_LIST_FILE = $$PWD/QtGui.dynlist
+message(QT_ARCH=$$QT_ARCH)

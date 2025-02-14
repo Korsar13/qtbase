@@ -115,11 +115,17 @@ gcc:equals(QT_GCC_MAJOR_VERSION, 5) {
     NO_PCH_SOURCES += painting/qdrawhelper.cpp
 }
 
-SSE2_SOURCES += painting/qdrawhelper_sse2.cpp
-SSSE3_SOURCES += painting/qdrawhelper_ssse3.cpp
-SSE4_1_SOURCES += painting/qdrawhelper_sse4.cpp \
+#SSE2_SOURCES += painting/qdrawhelper_sse2.cpp
+#SSSE3_SOURCES += painting/qdrawhelper_ssse3.cpp
+#SSE4_1_SOURCES += painting/qdrawhelper_sse4.cpp \
+#                  painting/qimagescale_sse4.cpp
+#AVX2_SOURCES += painting/qdrawhelper_avx2.cpp
+
+SOURCES += painting/qdrawhelper_sse2.cpp
+SOURCES += painting/qdrawhelper_ssse3.cpp
+SOURCES += painting/qdrawhelper_sse4.cpp \
                   painting/qimagescale_sse4.cpp
-AVX2_SOURCES += painting/qdrawhelper_avx2.cpp
+SOURCES += painting/qdrawhelper_avx2.cpp
 
 NEON_SOURCES += painting/qdrawhelper_neon.cpp painting/qimagescale_neon.cpp
 NEON_HEADERS += painting/qdrawhelper_neon_p.h
