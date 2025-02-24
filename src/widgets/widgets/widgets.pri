@@ -364,7 +364,7 @@ macx {
     }
 }
 
-#!qtConfig(static) {
-#HEADERS += widgets/AkvisTextControl.h
-#SOURCES += widgets/AkvisTextControl.cpp
-#}
+!qtConfig(static) {
+HEADERS += widgets/AkvisTextControl.h
+SOURCES += widgets/AkvisTextControl.cpp
+}
