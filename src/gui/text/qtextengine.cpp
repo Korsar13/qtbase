@@ -1064,9 +1064,10 @@ void QTextEngine::shapeText(int item) const
         letterSpacingIsAbsolute = font.d->letterSpacingIsAbsolute;
         letterSpacing = font.d->letterSpacing;
         wordSpacing = font.d->wordSpacing;
-
+#if 0 // очень похоже на костыль для Retina (Apple). но у нас при dpi документа меньше дефолта, обнулялось
         if (letterSpacingIsAbsolute && letterSpacing.value())
             letterSpacing *= font.d->dpi / qt_defaultDpiY();
+#endif
     }
 
 #if QT_CONFIG(harfbuzz)
