@@ -195,6 +195,8 @@ enum Property {
     QtListNumberSuffix,
     LineHeight,
     QtLineHeightType,
+    LetterSpacing,
+    QtLetterSpacingType,
     NumProperties
 };
 

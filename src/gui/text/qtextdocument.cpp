@@ -2569,6 +2569,28 @@ bool QTextHtmlExporter::emitCharFormatStyle(const QTextCharFormat &format)
         attributesEmitted = true;
     }
 
+    if ( format.hasProperty(QTextFormat::FontLetterSpacingType) && format.hasProperty(QTextFormat::FontLetterSpacing) )
+    {
+        auto flst = format.fontLetterSpacingType();
+        auto fls  = format.fontLetterSpacing();
+        if ( flst == QFont::AbsoluteSpacing && fls != 0 )
+        {
+            html += QStringLiteral(" letter-spacing:");
+            html += QString::number( fls );
+            html += QLatin1String("px;");
+            attributesEmitted = true;
+        }
+#if 0
+        else if ( flst == QFont::PercentageSpacing && fls != 100 )
+        {
+            html += QStringLiteral(" letter-spacing:");
+            html += QString::number( fls );
+            html += QLatin1String("%;");
+            attributesEmitted = true;
+        }
+#endif
+    }
+
     return attributesEmitted;
 }
 

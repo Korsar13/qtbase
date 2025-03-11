@@ -123,6 +123,7 @@ static const QCssKnownValue properties[NumProperties - 1] = {
     { "image", QtImage },
     { "image-position", QtImageAlignment },
     { "left", Left },
+    { "letter-spacing", LetterSpacing },
     { "line-height", LineHeight },
     { "list-style", ListStyle },
     { "list-style-type", ListStyleType },
@@ -1214,6 +1215,24 @@ static void setTextDecorationFromValues(const QVector<QCss::Value> &values, QFon
     }
 }
 
+static bool setFontLetterSpacingFromValue(QCss::Value value, QFont *font)
+{
+    bool valid = false;
+    QString s = value.variant.toString();
+    if ( s.endsWith( "px", Qt::CaseInsensitive ) )
+    {
+        s.chop(2);
+        value.variant = s;
+        if ( value.variant.canConvert(QVariant::Double) )
+        {
+            font->setLetterSpacing( QFont::AbsoluteSpacing, value.variant.toDouble() );
+            valid = true;
+        }
+    }
+    return valid;
+}
+
+
 static void parseShorthandFontProperty(const QVector<QCss::Value> &values, QFont *font, int *fontSizeAdjustment)
 {
     font->setStyle(QFont::StyleNormal);
@@ -1285,6 +1304,7 @@ bool ValueExtractor::extractFont(QFont *font, int *fontSizeAdjustment)
             case Font: parseShorthandFontProperty(decl.d->values, font, fontSizeAdjustment); break;
             case FontVariant: setFontVariantFromValue(val, font); break;
             case TextTransform: setTextTransformFromValue(val, font); break;
+            case LetterSpacing: setFontLetterSpacingFromValue(val, font); break;
             default: continue;
         }
         hit = true;
