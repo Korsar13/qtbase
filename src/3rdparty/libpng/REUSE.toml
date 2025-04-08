@@ -1,22 +1,10 @@
-{
-    "Id": "libpng",
-    "Name": "LibPNG",
-    "QDocModule": "qtgui",
-    "QtUsage": "Used in the qpng image plugin. Configure with -system-libpng or -no-libpng to avoid.",
-    "SecurityCritical": true,
+version = 1
 
-    "Description": "libpng is the official PNG reference library.",
-    "Homepage": "http://www.libpng.org/pub/png/libpng.html",
-    "Version": "1.6.47",
-    "DownloadLocation": "https://download.sourceforge.net/libpng/libpng-1.6.47.tar.xz",
-    "PURL": "pkg:github/pnggroup/libpng@v$<VERSION>",
-    "CPE": "cpe:2.3:a:libpng:libpng:$<VERSION>:*:*:*:*:*:*:*",
-
-    "License": "libpng License and PNG Reference Library version 2",
-    "LicenseId": "Libpng AND libpng-2.0",
-    "LicenseFile": "LICENSE",
-    "Copyright": ["Copyright (c) 1995-2025 The PNG Reference Library Authors",
-    "Copyright (c) 2000-2025 Cosmin Truta",
+[[annotations]]
+path = ["**"]
+precedence = "closest"
+SPDX-FileCopyrightText = ["Copyright (c) 1995-2024 The PNG Reference Library Authors",
+    "Copyright (c) 2000-2024 Cosmin Truta",
     "Copyright (c) 1998-2018 Glenn Randers-Pehrson",
     "Copyright (c) 1996-1997 Andreas Dilger",
     "Copyright (c) 1995-1996 Guy Eric Schalnat, Group 42, Inc.",
@@ -37,4 +25,4 @@
     "Copyright (c) 1995-1996 Dave Martindale",
     "Copyright (c) 1995-1996 Paul Schmidt",
     "Copyright (c) 1995-1996 Tim Wegner"]
-}
+SPDX-License-Identifier = "Libpng AND libpng-2.0"
