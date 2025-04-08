@@ -1284,8 +1284,19 @@ void QTextLayout::draw(QPainter *p, const QPointF &pos, const QVector<FormatRang
     if (!excludedRegion.isEmpty()) {
         p->save();
         QPainterPath path;
-        QRectF br = boundingRect().translated(position);
-        br.setRight(QFIXED_MAX);
+        QRectF br;
+        if ( d->warper() )
+        {
+            br.setLeft(-QFIXED_MAX);
+            br.setTop(-QFIXED_MAX);
+            br.setRight(QFIXED_MAX);
+            br.setBottom(QFIXED_MAX);
+        }
+        else
+        {
+            br = boundingRect().translated(position);
+            br.setRight(QFIXED_MAX);
+        }
         if (!clip.isNull())
             br = br.intersected(clip);
         path.addRect(br);
