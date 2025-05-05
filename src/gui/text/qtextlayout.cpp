@@ -2632,20 +2632,23 @@ void QTextLine::draw(QPainter *p, const QPointF &pos, const QTextLayout::FormatR
             if (gf.glyphs.numGlyphs)
                 gf.fontEngine->addOutlineToPath(pos.x(), pos.y(), gf.glyphs, &path, gf.flags);
             if (gf.flags) {
+                QPainterPath temp;
                 const QFontEngine *fe = gf.fontEngine;
                 const qreal lw = fe->lineThickness().toReal();
                 if (gf.flags & QTextItem::Underline) {
                     qreal offs = fe->underlinePosition().toReal();
-                    path.addRect(pos.x(), pos.y() + offs, gf.width.toReal(), lw);
+                    temp.addRect(pos.x(), pos.y() + offs, gf.width.toReal(), lw);
                 }
                 if (gf.flags & QTextItem::Overline) {
                     qreal offs = fe->ascent().toReal() + 1;
-                    path.addRect(pos.x(), pos.y() - offs, gf.width.toReal(), lw);
+                    temp.addRect(pos.x(), pos.y() - offs, gf.width.toReal(), lw);
                 }
                 if (gf.flags & QTextItem::StrikeOut) {
                     qreal offs = fe->ascent().toReal() / 3;
-                    path.addRect(pos.x(), pos.y() - offs, gf.width.toReal(), lw);
+                    temp.addRect(pos.x(), pos.y() - offs, gf.width.toReal(), lw);
                 }
+                if ( !temp.isEmpty() )
+                    path = path.united( temp );
             }
 
             if (eng->warper())
