@@ -634,9 +634,9 @@
                 ],
                 "include": [ "EGL/egl.h", "xcb/xcb.h", "X11/Xlib.h", "X11/Xlib-xcb.h" ],
                 "main": [
-                    "Display *dpy = EGL_DEFAULT_DISPLAY;",
+                    "Display *dpy = (Display*)EGL_DEFAULT_DISPLAY;",
                     "EGLNativeDisplayType egldpy = XOpenDisplay(\"\");",
-                    "dpy = egldpy;",
+                    "dpy = (Display*)egldpy;",
                     "EGLNativeWindowType w = XCreateWindow(dpy, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);",
                     "XDestroyWindow(dpy, w);",
                     "XCloseDisplay(dpy);"
