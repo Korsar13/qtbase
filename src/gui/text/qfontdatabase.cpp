@@ -763,13 +763,17 @@ void qt_registerFont(const QString &familyName, const QString& familyPSName, con
     QtFontStyle *fontStyle = foundry->style(styleKey, stylename, true);
     fontStyle->smoothScalable = scalable;
     fontStyle->antialiased = antialiased;
-    QtFontSize *size = fontStyle->pixelSize(pixelSize ? pixelSize : SMOOTH_SCALABLE, true);
-    if (size->handle) {
-        QPlatformIntegration *integration = QGuiApplicationPrivate::platformIntegration();
-        if (integration)
-            integration->fontDatabase()->releaseHandle(size->handle);
+    QtFontSize *size = fontStyle->pixelSize(pixelSize ? pixelSize : SMOOTH_SCALABLE, false);
+    if ( !size )
+    {
+        size = fontStyle->pixelSize(pixelSize ? pixelSize : SMOOTH_SCALABLE, true);
+        if (size->handle) {
+            QPlatformIntegration *integration = QGuiApplicationPrivate::platformIntegration();
+            if (integration)
+                integration->fontDatabase()->releaseHandle(size->handle);
+        }
+        size->handle = handle;
     }
-    size->handle = handle;
     f->populated = true;
 }
 
