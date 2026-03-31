@@ -175,6 +175,17 @@
 // #  define Q_BYTE_ORDER Q_LITTLE_ENDIAN
 
 /*
+    E2K family, no variants
+
+    E2K is little-endian
+*/
+
+#elif defined(__e2k__)
+#  define Q_BYTE_ORDER Q_LITTLE_ENDIAN
+#  define Q_PROCESSOR_E2K
+#  define Q_PROCESSOR_WORDSIZE 8
+
+/*
     X86 family, known variants: 32- and 64-bit
 
     X86 is little-endian.

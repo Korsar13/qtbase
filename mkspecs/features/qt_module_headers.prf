@@ -228,6 +228,9 @@ headersclean:!internal_module {
                     hcleanFLAGS += -Wzero-as-null-pointer-constant
                 }
             }
+            lcc: {
+                hcleanFLAGS += -Wno-error=deprecated-declarations
+            }
         }
 
         # Use strict mode C++11 or C++98, with no GNU extensions (see -pedantic-errors above).

@@ -68,6 +68,10 @@
 
 QT_BEGIN_NAMESPACE
 
+#ifdef Q_CC_LCC
+QT_WARNING_DISABLE_VIRT_DECL_HIDDEN
+#endif
+
 class QGLContext;
 class QGLOverlayWidget;
 class QPixmap;

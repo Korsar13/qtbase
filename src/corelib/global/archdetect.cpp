@@ -77,6 +77,8 @@
 #  define ARCH_PROCESSOR "sparcv9"
 #elif defined(Q_PROCESSOR_SPARC)
 #  define ARCH_PROCESSOR "sparc"
+#elif defined(Q_PROCESSOR_E2K)
+#  define ARCH_PROCESSOR "e2k"
 #else
 #  define ARCH_PROCESSOR "unknown"
 #endif

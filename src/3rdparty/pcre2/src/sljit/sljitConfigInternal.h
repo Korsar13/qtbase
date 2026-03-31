@@ -304,7 +304,7 @@
 #define SLJIT_CACHE_FLUSH(from, to) \
 	sys_icache_invalidate((char*)(from), (char*)(to) - (char*)(from))
 
-#elif (defined(__GNUC__) && (__GNUC__ >= 5 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3)))
+#elif (defined(__GNUC__) && (__GNUC__ >= 5 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3))) && !defined(__LCC__)
 
 #define SLJIT_CACHE_FLUSH(from, to) \
 	__builtin___clear_cache((char*)from, (char*)to)

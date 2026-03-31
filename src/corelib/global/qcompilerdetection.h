@@ -69,6 +69,7 @@
      GHS      - Green Hills Optimizing C++ Compilers
      RVCT     - ARM Realview Compiler Suite
      CLANG    - C++ front-end for the LLVM compiler
+     LCC      - Elbrus C Compiler
 
 
    Should be sorted most to least authoritative.
@@ -156,6 +157,9 @@
 #  if defined(__MINGW32__)
 #    define Q_CC_MINGW
 #  endif
+#  if defined(__LCC__)
+#    define Q_CC_LCC        (__LCC__)
+#  endif
 #  if defined(__INTEL_COMPILER)
 /* Intel C++ also masquerades as GCC */
 #    define Q_CC_INTEL      (__INTEL_COMPILER)
@@ -241,7 +245,11 @@
 #  define Q_UNLIKELY(expr)  __builtin_expect(!!(expr), false)
 #  define Q_NORETURN        __attribute__((__noreturn__))
 #  define Q_REQUIRED_RESULT __attribute__ ((__warn_unused_result__))
-#  define Q_DECL_PURE_FUNCTION __attribute__((pure))
+#  if defined(Q_CC_LCC)
+#    define Q_DECL_PURE_FUNCTION
+#  else
+#    define Q_DECL_PURE_FUNCTION __attribute__((pure))
+#  endif
 #  define Q_DECL_CONST_FUNCTION __attribute__((const))
 #  if !defined(QT_MOC_CPP)
 #    define Q_PACKED __attribute__ ((__packed__))
@@ -1273,6 +1281,17 @@
 #  define QT_WARNING_DISABLE_CLANG(text)
 #  define QT_WARNING_DISABLE_GCC(text)
 #  define QT_WARNING_DISABLE_DEPRECATED         QT_WARNING_DISABLE_INTEL(1478 1786)
+#elif defined(Q_CC_LCC)
+#  define QT_WARNING_PUSH
+#  define QT_WARNING_POP
+#  define QT_WARNING_DISABLE_INTEL(number)
+#  define QT_WARNING_DISABLE_MSVC(number)
+#  define QT_WARNING_DISABLE_LCC(number)        QT_DO_PRAGMA(diag_suppress number)
+#  define QT_WARNING_DISABLE_CLANG(text)
+#  define QT_WARNING_DISABLE_GCC(text)
+#  define QT_WARNING_DISABLE_ASIGN_WHERE_COMPARE_MEANT QT_WARNING_DISABLE_LCC(187)
+#  define QT_WARNING_DISABLE_DEPRECATED         QT_WARNING_DISABLE_LCC(1444)
+#  define QT_WARNING_DISABLE_VIRT_DECL_HIDDEN   QT_WARNING_DISABLE_LCC(997)
 #elif defined(Q_CC_INTEL)
 /* icc: Intel compiler on Linux or OS X */
 #  define QT_WARNING_PUSH                       QT_DO_PRAGMA(warning(push))
@@ -1347,10 +1366,14 @@
     } while (false)
 
 #if defined(__cplusplus)
+#if defined(__clang__)
 #if QT_HAS_CPP_ATTRIBUTE(clang::fallthrough)
 #    define Q_FALLTHROUGH() [[clang::fallthrough]]
-#elif QT_HAS_CPP_ATTRIBUTE(gnu::fallthrough)
+#endif
+#elif defined(__GNUC__) && !defined(__LCC__)
+#if QT_HAS_CPP_ATTRIBUTE(gnu::fallthrough)
 #    define Q_FALLTHROUGH() [[gnu::fallthrough]]
+#endif
 #elif QT_HAS_CPP_ATTRIBUTE(fallthrough)
 #  define Q_FALLTHROUGH() [[fallthrough]]
 #endif
@@ -1367,7 +1390,7 @@
 /*
     Sanitize compiler feature availability
 */
-#if !defined(Q_PROCESSOR_X86)
+#if !defined(Q_PROCESSOR_X86) && !defined(Q_PROCESSOR_E2K)
 #  undef QT_COMPILER_SUPPORTS_SSE2
 #  undef QT_COMPILER_SUPPORTS_SSE3
 #  undef QT_COMPILER_SUPPORTS_SSSE3

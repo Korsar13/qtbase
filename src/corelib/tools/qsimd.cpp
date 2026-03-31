@@ -85,6 +85,20 @@ static inline uint detectProcessorFeatures()
 {
     return 0;
 }
+
+#elif defined(Q_PROCESSOR_E2K)
+static inline quint64 detectProcessorFeatures()
+{
+    return  (Q_UINT64_C(1) << CpuFeatureSSE2) |
+            (Q_UINT64_C(1) << CpuFeatureSSE3) |
+            (Q_UINT64_C(1) << CpuFeatureSSSE3) |
+            (Q_UINT64_C(1) << CpuFeatureSSE4_1) |
+            (Q_UINT64_C(1) << CpuFeatureSSE4_2) |
+            (Q_UINT64_C(1) << CpuFeatureAVX) |
+            (Q_UINT64_C(1) << CpuFeatureF16C) |
+            (Q_UINT64_C(1) << CpuFeatureAVX2);
+}
+
 #elif defined(Q_PROCESSOR_ARM)
 static inline quint64 detectProcessorFeatures()
 {

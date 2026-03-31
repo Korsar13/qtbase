@@ -704,7 +704,7 @@ void tst_Compiler::cxx11_attributes()
 #else
     // Attributes in function parameters and using clauses cause MSVC 2015 to crash
     // https://connect.microsoft.com/VisualStudio/feedback/details/2011594
-#  if (!defined(Q_CC_MSVC) || _MSC_FULL_VER >= 190023811) && !defined(Q_CC_INTEL)
+#  if (!defined(Q_CC_MSVC) || _MSC_FULL_VER >= 190023811) && !defined(Q_CC_INTEL) && !defined(Q_CC_LCC)
     void f([[ ]] int);
     [[ ]] using namespace QtPrivate;
     [[ ]] try {

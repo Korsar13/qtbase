@@ -296,7 +296,7 @@
 // other x86 intrinsics
 #if defined(Q_PROCESSOR_X86) && ((defined(Q_CC_GNU) && (Q_CC_GNU >= 404)) \
     || (defined(Q_CC_CLANG) && (Q_CC_CLANG >= 208)) \
-    || defined(Q_CC_INTEL))
+    || defined(Q_CC_INTEL)) || defined(Q_PROCESSOR_E2K)
 #  define QT_COMPILER_SUPPORTS_X86INTRIN
 #  ifdef Q_CC_INTEL
 // The Intel compiler has no <x86intrin.h> -- all intrinsics are in <immintrin.h>;
@@ -346,7 +346,7 @@ enum CPUFeatures {
 #elif defined(Q_PROCESSOR_MIPS)
     CpuFeatureDSP           = 0,
     CpuFeatureDSPR2         = 1,
-#elif defined(Q_PROCESSOR_X86)
+#elif defined(Q_PROCESSOR_X86) || defined(Q_PROCESSOR_E2K)
     // The order of the flags is jumbled so it matches most closely the bits in CPUID
     // Out of order:
     CpuFeatureSSE2          = 1,                       // uses the bit for PCLMULQDQ

@@ -58,7 +58,7 @@ clang {
     clang_ver = $${QT_CLANG_MAJOR_VERSION}.$${QT_CLANG_MINOR_VERSION}
     versionAtLeast(clang_ver, 3.5): \
         QMAKE_CXXFLAGS_WARN_ON += -Wdate-time
-} else: gcc:!intel_icc {
+} else: !lcc:gcc:!intel_icc {
     QMAKE_CXXFLAGS_WARN_ON += -Wvla
     # GCC 5 introduced -Wdate-time
     greaterThan(QT_GCC_MAJOR_VERSION, 4): QMAKE_CXXFLAGS_WARN_ON += -Wdate-time
@@ -107,6 +107,8 @@ warnings_are_errors:warning_clean {
 
             # Work-around for bug https://code.google.com/p/android/issues/detail?id=58135
             android: QMAKE_CXXFLAGS_WARN_ON += -Wno-error=literal-suffix
+            # agressive unused-variables and inline-noinline conflict
+            lcc:  QMAKE_CXXFLAGS_WARN_ON += -Wno-error=unused-variable -Wno-error=unused-function -Wno-error=unused-parameter -Wno-error=unused-value -Wno-inline-noinline-conflict -Wno-error=sign-compare -Wno-error=invalid-offsetof -Wno-error=signed-one-bit-field -Wno-error=maybe-uninitialized -Wno-error=overloaded-virtual -Wno-error=type-limits -Wno-error=jump-misses-init -Wno-error=array-bounds -Wno-error=shadow=global -Wno-error=shift-count-overflow -Wno-error=unused-result -Wno-error=reduced-alignment -Wno-error=assign-where-compare-meant -Wno-error=attributes
         }
     } else:msvc:!intel_icl {
         # enable for MSVC 2012, MSVC 2013, MSVC 2015

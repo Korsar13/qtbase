@@ -34,7 +34,7 @@ else:!qtConfig(process):                    SUBDIRS -= tools
 !qtHaveModule(sql):                         SUBDIRS -= sql
 
 # Disable the QtDBus tests if we can't connect to the session bus
-!cross_compile:qtHaveModule(dbus) {
+!cross_skip:!cross_compile:qtHaveModule(dbus) {
     !system("dbus-send --session --type=signal / local.AutotestCheck.Hello >$$QMAKE_SYSTEM_NULL_DEVICE 2>&1") {
         qtConfig(dbus-linked): \
             error("QtDBus is enabled but session bus is not available. Please check the installation.")

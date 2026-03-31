@@ -119,7 +119,7 @@ isEmpty($${target_prefix}.INCDIRS) {
                 }
             }
         }
-        if(!darwin:clang)|intel_icc {
+        if(!darwin:clang)|intel_icc|lcc {
             # Clang on a non-Apple system (that is, a system without ld64 -- say, with GNU ld
             # or gold under Linux) will not print any library search path. Need to use another
             # invocation with different options (which in turn doesn't print include search

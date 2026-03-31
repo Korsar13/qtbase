@@ -1,9 +1,9 @@
 /****************************************************************************
 **
-** Copyright (C) 2016 Intel Corporation.
+** Copyright (C) 2016 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
-** This file is part of the QtCore module of the Qt Toolkit.
+** This file is part of the qmake spec of the Qt Toolkit.
 **
 ** $QT_BEGIN_LICENSE:LGPL$
 ** Commercial License Usage
@@ -37,56 +37,62 @@
 **
 ****************************************************************************/
 
+#ifndef QPLATFORMDEFS_H
+#define QPLATFORMDEFS_H
+
+// Get Qt defines/settings
+
 #include "qglobal.h"
 
-#define SYM QT_MANGLE_NAMESPACE(qt_version_tag)
-//#define SSYM QT_STRINGIFY(SYM)
+// Set any POSIX/XOPEN defines at the top of this file to turn on specific APIs
 
-#if defined(Q_CC_GNU) && defined(Q_OF_ELF) && !defined(Q_OS_ANDROID) && !defined(Q_CC_LCC)
-#  define make_versioned_symbol2(sym, m, n, separator)     \
-    Q_CORE_EXPORT extern const char sym ## _ ## m ## _ ## n = 0; \
-    asm(".symver " QT_STRINGIFY(sym) "_" QT_STRINGIFY(m) "_" QT_STRINGIFY(n) ", " \
-        QT_STRINGIFY(sym) separator "Qt_" QT_STRINGIFY(m) "." QT_STRINGIFY(n))
+// 1) need to reset default environment if _BSD_SOURCE is defined
+// 2) need to specify POSIX thread interfaces explicitly in glibc 2.0
+// 3) it seems older glibc need this to include the X/Open stuff
+#ifndef _GNU_SOURCE
+#  define _GNU_SOURCE
+#endif
+
+#include <unistd.h>
+
+
+// We are hot - unistd.h should have turned on the specific APIs we requested
+
+#include <features.h>
+#include <pthread.h>
+#include <dirent.h>
+#include <fcntl.h>
+#include <grp.h>
+#include <pwd.h>
+#include <signal.h>
+
+#include <sys/types.h>
+#include <sys/ioctl.h>
+#include <sys/ipc.h>
+#include <sys/time.h>
+#include <sys/shm.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <netinet/in.h>
+#ifndef QT_NO_IPV6IFNAME
+#include <net/if.h>
+#endif
+
+#define QT_USE_XOPEN_LFS_EXTENSIONS
+#include "../common/posix/qplatformdefs.h"
+
+#undef QT_SOCKLEN_T
+
+#if defined(__GLIBC__) && (__GLIBC__ < 2)
+#define QT_SOCKLEN_T            int
 #else
-#  define make_versioned_symbol2(sym, m, n, separator)
-#endif
-#define make_versioned_symbol(sym, m, n, separator)    make_versioned_symbol2(sym, m, n, separator)
-
-extern "C" {
-#if QT_VERSION_MINOR > 0
-make_versioned_symbol(SYM, QT_VERSION_MAJOR, 0, "@");
-#endif
-#if QT_VERSION_MINOR > 1
-make_versioned_symbol(SYM, QT_VERSION_MAJOR, 1, "@");
-#endif
-#if QT_VERSION_MINOR > 2
-make_versioned_symbol(SYM, QT_VERSION_MAJOR, 2, "@");
-#endif
-#if QT_VERSION_MINOR > 3
-make_versioned_symbol(SYM, QT_VERSION_MAJOR, 3, "@");
-#endif
-#if QT_VERSION_MINOR > 4
-make_versioned_symbol(SYM, QT_VERSION_MAJOR, 4, "@");
-#endif
-#if QT_VERSION_MINOR > 5
-make_versioned_symbol(SYM, QT_VERSION_MAJOR, 5, "@");
-#endif
-#if QT_VERSION_MINOR > 6
-make_versioned_symbol(SYM, QT_VERSION_MAJOR, 6, "@");
-#endif
-#if QT_VERSION_MINOR > 7
-make_versioned_symbol(SYM, QT_VERSION_MAJOR, 7, "@");
-#endif
-#if QT_VERSION_MINOR > 8
-make_versioned_symbol(SYM, QT_VERSION_MAJOR, 8, "@");
-#endif
-#if QT_VERSION_MINOR > 9
-make_versioned_symbol(SYM, QT_VERSION_MAJOR, 9, "@");
-#endif
-#if QT_VERSION_MINOR > 10
-#  error "Please update this file with more Qt versions."
+#define QT_SOCKLEN_T            socklen_t
 #endif
 
-// the default version:
-make_versioned_symbol(SYM, QT_VERSION_MAJOR, QT_VERSION_MINOR, "@@");
-}
+#if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE >= 500)
+#define QT_SNPRINTF             ::snprintf
+#define QT_VSNPRINTF            ::vsnprintf
+#endif
+
+#endif // QPLATFORMDEFS_H

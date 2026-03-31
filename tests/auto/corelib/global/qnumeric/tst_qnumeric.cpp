@@ -350,7 +350,7 @@ template <typename Int> static void mulOverflow_template()
 #endif
 }
 
-template <typename Int, bool enabled = sizeof(Int) <= sizeof(void*)> struct MulOverflowDispatch;
+template <typename Int, bool enabled = sizeof(Int) < sizeof(void*)> struct MulOverflowDispatch;
 template <typename Int> struct MulOverflowDispatch<Int, true>
 {
     void operator()() { mulOverflow_template<Int>(); }

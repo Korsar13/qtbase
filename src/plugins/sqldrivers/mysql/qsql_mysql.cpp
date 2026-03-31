@@ -232,7 +232,7 @@ public:
               myField(0), type(QVariant::Invalid)
         {}
         char *outField;
-        my_bool nullIndicator;
+        bool nullIndicator;
         ulong bufLength;
         MYSQL_FIELD *myField;
         QVariant::Type type;
@@ -983,7 +983,7 @@ bool QMYSQLResult::exec()
     MYSQL_BIND* currBind;
     QVector<MYSQL_TIME *> timeVector;
     QVector<QByteArray> stringVector;
-    QVector<my_bool> nullVector;
+    QVector<bool> nullVector;
 
     const QVector<QVariant> values = boundValues();
 
@@ -1004,7 +1004,7 @@ bool QMYSQLResult::exec()
 
             currBind = &d->outBinds[i];
 
-            nullVector[i] = static_cast<my_bool>(val.isNull());
+            nullVector[i] = static_cast<bool>(val.isNull());
             currBind->is_null = &nullVector[i];
             currBind->length = 0;
             currBind->is_unsigned = 0;
@@ -1101,7 +1101,7 @@ bool QMYSQLResult::exec()
     d->rowsAffected = mysql_stmt_affected_rows(d->stmt);
 
     if (isSelect()) {
-        my_bool update_max_length = true;
+        bool update_max_length = true;
 
         r = mysql_stmt_bind_result(d->stmt, d->inBinds);
         if (r != 0) {
@@ -1312,7 +1312,7 @@ bool QMYSQLDriver::open(const QString& db,
     QString sslCAPath;
     QString sslCipher;
 #if MYSQL_VERSION_ID >= 50000
-    my_bool reconnect=false;
+    bool reconnect=false;
     uint connectTimeout = 0;
     uint readTimeout = 0;
     uint writeTimeout = 0;
